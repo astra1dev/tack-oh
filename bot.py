@@ -24,9 +24,9 @@ import asyncio
 import math
 
 # -------------------- VARIABLES -------------------- #
-activity = discord.Activity(type=discord.ActivityType.listening, name="your commands")
 bot = commands.Bot(command_prefix='!', help_command=None, intents=discord.Intents.all(),
-                   activity=activity, status=discord.Status.online)
+                   activity=discord.Activity(type=discord.ActivityType.listening, name="your commands"),
+                   status=discord.Status.online)
 
 # connect4
 player_piece = 'R'
@@ -43,12 +43,12 @@ player_dict = {True: [player_1, 'R', discord.Colour.red()],
 @bot.event
 async def on_ready():
     i = 0
-    print("\n-------------------------------------------\n"
+    print(f"\n{45*"-"}\n"
           "Bot is connected to the following servers:")
     for _ in bot.guilds:
         print(f"{str(i + 1)}: {str(bot.guilds[i].name)}, ID: {str(bot.guilds[i].id)}")
         i = i + 1
-    print("-------------------------------------------\n")
+    print(f"{45*"-"}\n")
 
     # Load commands from other files
     try:
@@ -80,12 +80,25 @@ class ChallengeView(discord.ui.View):
         self.bot = bot
         self.message = None
 
-    @discord.ui.button(label="Accept", emoji="✅", style=discord.ButtonStyle.success)
-    async def accept_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != self.player2:
+    async def on_timeout(self) -> None:
+        embed = discord.Embed(title=":crossed_swords: Challenge: connect4", colour=discord.Colour(0xff0000),
+                              description=f"{self.player1.mention} challenged {self.player2.mention} to a game of "
+                                          f"connect4!\nIt was cancelled because{self.player2.mention} did not respond "
+                                          f"in time.")
+        await self.message.edit(embed=embed, view=None)
+
+    async def interaction_check(self, interaction: discord.Interaction) -> bool:
+        if interaction.user == self.player2:
+            return True
+        else:
             embed = discord.Embed(title=":x: Error", colour=discord.Colour(0xff0000),
                                   description="You are not the challenged player.")
             await interaction.response.send_message(embed=embed, ephemeral=True)
+            return False
+
+    @discord.ui.button(label="Accept", emoji="✅", style=discord.ButtonStyle.success)
+    async def accept_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if not await self.interaction_check(interaction):
             return
 
         embed = discord.Embed(title=":video_game: Game: connect4", colour=discord.Colour(0x00ff00),
@@ -100,10 +113,7 @@ class ChallengeView(discord.ui.View):
 
     @discord.ui.button(label="Decline", emoji="❌", style=discord.ButtonStyle.danger)
     async def decline_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if interaction.user != self.player2:
-            embed = discord.Embed(title=":x: Error", colour=discord.Colour(0xff0000),
-                                  description="You are not the challenged player.")
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+        if not await self.interaction_check(interaction):
             return
 
         embed = discord.Embed(title=":video_game: Game: connect4", colour=discord.Colour(0xff0000),
