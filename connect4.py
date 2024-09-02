@@ -4,12 +4,12 @@ import random
 from typing import List, Dict
 import math
 
-ROW_COUNT = 6  # used to represent number of rows in a board
-COL_COUNT = 7  # used to represent number of columns in a board
-EMPTY = '*'    # used to represent an empty part of the board
-board_piece = {EMPTY: '⚫', 'R': '🔴', 'Y': '🟡'}
-PLAYER_PIECE = 'R'
-AI_PIECE = 'Y'
+row_count = 6  # used to represent number of rows in a board
+column_count = 7  # used to represent number of columns in a board
+empty_slot = '*'    # used to represent an empty part of the board
+board_piece = {empty_slot: '⚫', 'R': '🔴', 'Y': '🟡'}
+player_piece = 'R'
+ai_piece = 'Y'
 
 
 class Board:
@@ -21,7 +21,7 @@ class Board:
     # Methods
     def __init__(self) -> None:
         """Initialize a Board with empty cells."""
-        self._board = [[EMPTY] * COL_COUNT for _ in range(ROW_COUNT)]
+        self._board = [[empty_slot] * column_count for _ in range(row_count)]
 
     def print_board(self) -> str:
         """Return a string representation of the board."""
@@ -35,7 +35,7 @@ class Board:
 
     def is_valid_location(self, r: int, c: int) -> bool:
         """Check if the specified location is valid (empty)."""
-        return self._board[r][c] == EMPTY
+        return self._board[r][c] == empty_slot
 
     def drop_piece(self, r: int, c: int, piece: str) -> None:
         """Drop a piece into the board at the specified location."""
@@ -44,31 +44,31 @@ class Board:
     # for piece can use i from other function
     def is_win(self, piece: str) -> bool:
         """Check if the specified piece has a winning position."""
-        for c in range(COL_COUNT):
-            for r in range(ROW_COUNT):
+        for c in range(column_count):
+            for r in range(row_count):
 
                 # Horizontal Wins
-                if c < COL_COUNT - 3:
+                if c < column_count - 3:
                     if (self._board[r][c] == self._board[r][c + 1] == self.
                             _board[r][c + 2] == self._board[r][c + 3] == piece):
                         return True
 
                 # Vertical Wins
-                if r < ROW_COUNT - 3:
+                if r < row_count - 3:
                     if self._board[r][c] == self._board[r + 1][c] == \
                             self._board[r + 2][c] == \
                             self._board[r + 3][c] == piece:
                         return True
 
                 # Positive Diagonal Wins
-                if c < COL_COUNT - 3 and r < ROW_COUNT - 3:
+                if c < column_count - 3 and r < row_count - 3:
                     if self._board[r][c] == self._board[r + 1][c + 1] == \
                             self._board[r + 2][c + 2] == \
                             self._board[r + 3][c + 3] == piece:
                         return True
 
                 # Negative Diagonal Wins
-                if c < COL_COUNT - 3 and 3 <= r < ROW_COUNT:
+                if c < column_count - 3 and 3 <= r < row_count:
                     if self._board[r][c] == self._board[r - 1][c + 1] == \
                             self._board[r - 2][c + 2] == \
                             self._board[r - 3][c + 3] == piece:
@@ -79,47 +79,47 @@ class Board:
         """Return the score of the current board position for the specified piece."""
         score = 0
         # Score center column
-        center_list = [self._board[r][COL_COUNT // 2] for r in range(ROW_COUNT)]
+        center_list = [self._board[r][column_count // 2] for r in range(row_count)]
         center_count = center_list.count(piece)
         score += center_count * 3
 
         # Score Horizontal
-        for r in range(ROW_COUNT):
+        for r in range(row_count):
             row = self._board[r]
-            for c in range(COL_COUNT - 3):
+            for c in range(column_count - 3):
                 section = row[c:c + 4]
                 score += evaluate_section(section, piece)
 
         # Score Vertical
-        for c in range(COL_COUNT):
-            col = [self._board[r][c] for r in range(ROW_COUNT)]
-            for r in range(ROW_COUNT - 3):
+        for c in range(column_count):
+            col = [self._board[r][c] for r in range(row_count)]
+            for r in range(row_count - 3):
                 section = col[r:r + 4]
                 score += evaluate_section(section, piece)
 
         # Score Positive Diagonal
-        for r in range(ROW_COUNT - 3):
-            for c in range(COL_COUNT - 3):
+        for r in range(row_count - 3):
+            for c in range(column_count - 3):
                 section = [self._board[r + i][c + i] for i in range(4)]
                 score += evaluate_section(section, piece)
 
         # Score Negative Diagonal
-        for r in range(ROW_COUNT - 3):
-            for c in range(COL_COUNT - 3):
+        for r in range(row_count - 3):
+            for c in range(column_count - 3):
                 section = [self._board[r + 3 - i][c + i] for i in range(4)]
                 score += evaluate_section(section, piece)
         return score
 
     def is_terminal_node(self) -> bool:
         """Check if the game is over (win or tie)."""
-        return self.is_win(PLAYER_PIECE) or self.is_win(AI_PIECE) or (len(self.get_valid_locations()) == 0)
+        return self.is_win(player_piece) or self.is_win(ai_piece) or (len(self.get_valid_locations()) == 0)
 
     def get_valid_locations(self) -> Dict[int, int]:
         """Return a dictionary of valid locations where pieces can be dropped."""
         # Return a dict with key as column, and value as row.
         valid_locations = {}
-        for c in range(COL_COUNT):
-            for r in range(ROW_COUNT):
+        for c in range(column_count):
+            for r in range(row_count):
                 if self.is_valid_location(r, c):
                     valid_locations[c] = r
         return valid_locations
@@ -130,14 +130,14 @@ class Board:
         is_terminal = self.is_terminal_node()
         if depth == 0 or is_terminal:
             if is_terminal:
-                if self.is_win(AI_PIECE):
+                if self.is_win(ai_piece):
                     return None, 100000000000000
-                elif self.is_win(PLAYER_PIECE):
+                elif self.is_win(player_piece):
                     return None, -10000000000000
                 else:  # Game is over, no more valid moves
                     return None, 0
             else:  # Depth is zero
-                return None, self.score_position(AI_PIECE)
+                return None, self.score_position(ai_piece)
 
         if maximizing_player:  # Maximizing player (for bot turn)
             value = -math.inf
@@ -146,7 +146,7 @@ class Board:
                 row = valid_locations[col]
                 temp_board = Board()
                 temp_board._board = [sublist.copy() for sublist in self._board]
-                temp_board.drop_piece(row, col, AI_PIECE)
+                temp_board.drop_piece(row, col, ai_piece)
                 new_score = temp_board.minimax(depth - 1, alpha, beta, False)[1]
                 if new_score > value:
                     value = new_score
@@ -163,7 +163,7 @@ class Board:
                 row = valid_locations[col]
                 temp_board = Board()
                 temp_board._board = [sublist.copy() for sublist in self._board]
-                temp_board.drop_piece(row, col, PLAYER_PIECE)
+                temp_board.drop_piece(row, col, player_piece)
                 new_score = temp_board.minimax(depth - 1, alpha, beta, True)[1]
                 if new_score < value:
                     value = new_score
@@ -177,16 +177,16 @@ class Board:
 def evaluate_section(section: list, piece: str) -> int:
     """Evaluate the score of a specific section on the board based on how close the section is to having 4 connected"""
     score = 0
-    opp_piece = PLAYER_PIECE if piece == AI_PIECE else AI_PIECE
+    opp_piece = player_piece if piece == ai_piece else ai_piece
 
     if section.count(piece) == 4:
         score += 10000
-    elif section.count(piece) == 3 and section.count(EMPTY) == 1:
+    elif section.count(piece) == 3 and section.count(empty_slot) == 1:
         score += 10
-    elif section.count(piece) == 2 and section.count(EMPTY) == 2:
+    elif section.count(piece) == 2 and section.count(empty_slot) == 2:
         score += 5
 
-    if section.count(opp_piece) == 3 and section.count(EMPTY) == 1:
+    if section.count(opp_piece) == 3 and section.count(empty_slot) == 1:
         score -= 8
     elif section.count(opp_piece) == 4:
         score -= 8000
