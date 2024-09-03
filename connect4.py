@@ -1,4 +1,4 @@
-# This code was SKIDDED from: https://github.com/piroozb/connect-4-discord
+# This code was copied from: https://github.com/piroozb/connect-4-discord
 
 import random
 from typing import List, Dict

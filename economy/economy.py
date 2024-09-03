@@ -9,8 +9,8 @@ currency = ":taco:"
 
 
 class Account(peewee.Model):
+    guild_id: str = peewee.CharField(max_length=255, primary_key=True)
     user_id: str = peewee.CharField(max_length=255)
-    guild_id: str = peewee.CharField(max_length=255)
     amount: int = peewee.IntegerField()
 
     class Meta:

@@ -17,7 +17,7 @@ from discord.ext import commands, tasks
 from discord import app_commands
 # from discord.utils import get
 
-import settings
+from settings import settings
 from connect4 import Board
 
 import asyncio
