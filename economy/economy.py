@@ -4,25 +4,26 @@ import peewee
 import random
 from datetime import datetime, timedelta
 
-db = peewee.SqliteDatabase("economy.db")
+db = peewee.SqliteDatabase("economy/economy.db")
 currency = ":taco:"
 
 
 class Account(peewee.Model):
-    guild_id: str = peewee.CharField(max_length=255, primary_key=True)
     user_id: str = peewee.CharField(max_length=255)
+    guild_id: str = peewee.CharField(max_length=255)
     amount: int = peewee.IntegerField()
 
     class Meta:
         database = db
-        without_rowid = True
+        constraints = [peewee.SQL('UNIQUE (user_id, guild_id)')]
 
     @staticmethod
     def fetch(interaction):
-        try:
-            account = Account.get(Account.user_id == interaction.user.id, Account.guild_id == interaction.guild.id)
-        except peewee.DoesNotExist:
-            account = Account.create(user_id=interaction.user.id, guild_id=interaction.guild.id, amount=0)
+        account, created = Account.get_or_create(
+            user_id=interaction.user.id,
+            guild_id=interaction.guild.id,
+            defaults={'amount': 0}
+        )
         return account
 
     @staticmethod

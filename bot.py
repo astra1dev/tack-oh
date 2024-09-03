@@ -59,7 +59,7 @@ async def on_ready():
         await bot.load_extension("commands.image")
         await bot.load_extension("commands.music")
         await bot.load_extension("commands.nsfw")
-        await bot.load_extension("settings")
+        await bot.load_extension("settings.settings")
     except discord.ext.commands.errors.ExtensionAlreadyLoaded:
         pass
 

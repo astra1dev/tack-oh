@@ -9,7 +9,7 @@ load_dotenv()
 DISCORD_API_SECRET = os.getenv("DISCORD_API_TOKEN")
 GIPHY_API_KEY = os.getenv("GIPHY_API_KEY")
 
-db = peewee.SqliteDatabase("settings.db")
+db = peewee.SqliteDatabase("settings/settings.db")
 
 
 class Settings(peewee.Model):

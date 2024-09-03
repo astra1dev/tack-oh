@@ -1,6 +1,6 @@
 import discord
 from discord import app_commands
-from settings import NSFW_ALLOWED
+from settings.settings import NSFW_ALLOWED
 import requests
 
 
