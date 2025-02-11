@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-"""
+r"""
   _                _                   _
  | |              | |                 | |
  | |_  __ _   ___ | | __ ______  ___  | |__
@@ -22,6 +22,9 @@ from connect4 import Board
 
 import asyncio
 import math
+import time
+import datetime
+import psutil
 
 # -------------------- VARIABLES -------------------- #
 bot = commands.Bot(command_prefix='!', help_command=None, intents=discord.Intents.all(),
@@ -38,17 +41,20 @@ board, player_1, player_2, current_piece, timer, channel = 0, 1, 2, 3, 4, 5
 player_dict = {True: [player_1, 'R', discord.Colour.red()],
                False: [player_2, 'Y', discord.Colour.gold()]}
 
+# for uptime calculation
+start_time = time.time()
 
 # -------------------- FUNCTIONS -------------------- #
 @bot.event
 async def on_ready():
     i = 0
-    print(f"\n{45*"-"}\n"
-          "Bot is connected to the following servers:")
+    print(f"\n{45*'-'}\n"
+          f"[✅] {bot.user.name}#{bot.user.discriminator} (ID: {bot.user.id}, Display Name: {bot.user.display_name})  "
+          f"\n    is connected to the following servers:")
     for _ in bot.guilds:
         print(f"{str(i + 1)}: {str(bot.guilds[i].name)}, ID: {str(bot.guilds[i].id)}")
         i = i + 1
-    print(f"{45*"-"}\n")
+    print(f"{45*'-'}\n")
 
     # Load commands from other files
     try:
@@ -222,15 +228,46 @@ async def on_reaction_add(reaction, user) -> None:
         current_session[current_piece] = curr_piece
 
 
-@bot.tree.command(name="ping", description="Shows the bot's status and latency")
-async def hello(interaction):
-    ping_answer = discord.Embed(title=":ping_pong: Pong!", colour=discord.Colour(0x00ff00),
-                                description="Nice to meet you " + interaction.user.mention +
-                                            "\n**Latency:** " + str(round(bot.latency * 1000)) + "ms")
-    ping_answer.set_footer(text="created by Astral",
+@bot.tree.command(name="info", description="Shows the bot's status and latency")
+async def info(interaction):
+    # Calculate uptime
+    uptime_seconds = time.time() - start_time
+    days, remainder = divmod(uptime_seconds, 86400)
+    hours, remainder = divmod(remainder, 3600)
+    minutes, seconds = divmod(remainder, 60)
+
+    if days > 0:
+        uptime = f"{int(days)} day{'s' if days > 1 else ''}, {int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+    else:
+        uptime = f"{int(hours):02}:{int(minutes):02}:{int(seconds):02}"
+
+    connected_since = datetime.datetime.fromtimestamp(start_time, datetime.UTC).strftime("%Y-%m-%d %H:%M:%S")
+    creation_time = bot.user.created_at.strftime("%Y-%m-%d %H:%M:%S")
+
+    shard_id = bot.shard_id if bot.shard_id is not None else "Not Sharded"
+
+    # Get CPU and RAM usage
+    cpu_usage = psutil.cpu_percent(interval=1)
+    ram = psutil.virtual_memory()
+    ram_total = ram.total / (1024 ** 3)  # Convert bytes to GB
+    ram_used = ram.used / (1024 ** 3)
+    ram_usage = ram.percent
+
+    embed = discord.Embed(title=":pencil: Bot Information", colour=discord.Colour(0x00ff00),
+                          timestamp=datetime.datetime.now(datetime.UTC))
+    embed.add_field(name="⏱️ Latency", value=f"{str(round(bot.latency * 1000))}ms")
+    embed.add_field(name="🌍 Servers", value=f"{str(len(bot.guilds))}")
+    embed.add_field(name="👥 Users", value=f"{str(len([member for guild in bot.guilds for member in guild.members]))}")
+    embed.add_field(name="⏳ Uptime", value=f"{uptime}")
+    embed.add_field(name="🕰️ Connected Since", value=f"{connected_since}")
+    embed.add_field(name="🗓️ Creation Time", value=f"{creation_time}")
+    embed.add_field(name="💻 CPU Usage", value=f"{cpu_usage}%")
+    embed.add_field(name="💻 RAM Usage", value=f"{ram_usage}% ({ram_used:.2f} GB / {ram_total:.2f} GB)")
+    embed.add_field(name="⚙️ Shards", value=f"{shard_id} / {bot.shard_count}")
+    embed.set_footer(text="created by Astral",
                            icon_url="https://cdn.discordapp.com/avatars/951884381209890877"
                                     "/ad9abec491fb314fc796b14d6f2edf83.png")
-    await interaction.response.send_message(embed=ping_answer, ephemeral=True)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 # to restrict this command to admins / specific role only:
