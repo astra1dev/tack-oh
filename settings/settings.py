@@ -16,13 +16,13 @@ class Settings(peewee.Model):
     guild_id: str = peewee.CharField(max_length=255, primary_key=True)
     currency: str = peewee.CharField(max_length=255, default=":taco:")
     prefix: str = peewee.CharField(max_length=255, default="!")
-    module_anime = peewee.BooleanField(default=0)
-    module_economy = peewee.BooleanField(default=0)
-    module_fun = peewee.BooleanField(default=1)
-    module_games = peewee.BooleanField(default=0)
-    module_image = peewee.BooleanField(default=0)
-    module_music = peewee.BooleanField(default=0)
-    module_nsfw = peewee.BooleanField(default=0)
+    module_anime = peewee.BooleanField(default=False)
+    module_economy = peewee.BooleanField(default=False)
+    module_fun = peewee.BooleanField(default=True)
+    module_games = peewee.BooleanField(default=False)
+    module_image = peewee.BooleanField(default=False)
+    module_music = peewee.BooleanField(default=False)
+    module_nsfw = peewee.BooleanField(default=False)
 
     class Meta:
         database = db
@@ -33,24 +33,32 @@ class SettingsCommands(app_commands.Group):
     @app_commands.command(name="set", description="Set a setting")
     @app_commands.describe(setting="The setting you want to change",
                            value="The value you want to set (0/1 for modules, string for currency/prefix)")
-    @app_commands.choices(setting=[app_commands.Choice(name="Module Anime", value="anime"),
-                                   app_commands.Choice(name="Module Economy", value="economy"),
-                                   app_commands.Choice(name="Module Fun", value="fun"),
-                                   app_commands.Choice(name="Module Games", value="games"),
-                                   app_commands.Choice(name="Module Image", value="image"),
-                                   app_commands.Choice(name="Module Music", value="music"),
-                                   app_commands.Choice(name="Module NSFW", value="nsfw"),
+    @app_commands.choices(setting=[app_commands.Choice(name="Anime", value="anime"),
+                                   app_commands.Choice(name="Economy", value="economy"),
+                                   app_commands.Choice(name="Fun", value="fun"),
+                                   app_commands.Choice(name="Games", value="games"),
+                                   app_commands.Choice(name="Image", value="image"),
+                                   app_commands.Choice(name="Music", value="music"),
+                                   app_commands.Choice(name="NSFW", value="nsfw"),
                                    app_commands.Choice(name="Currency Icon", value="currency"),
                                    app_commands.Choice(name="Prefix (will soon be removed)", value="prefix")])
-    async def set(self, interaction: discord.Interaction, setting: str, value: str):
+    async def set(self, interaction: discord.Interaction, setting: str, value: str) -> None:
         try:
             settings = Settings.get(Settings.guild_id == interaction.guild.id)
         except peewee.DoesNotExist:
             settings = Settings.create(guild_id=interaction.guild.id)
 
-        # Convert value to integer if setting is a module
+        # Convert value to boolean if it's a module
         if setting in ["anime", "economy", "fun", "games", "image", "music", "nsfw"]:
-            value = int(value)
+            if value.lower() in ["enabled", "true", "1", "on"]:
+                value = True
+            elif value.lower() in ["disabled", "false", "0", "off"]:
+                value = False
+            else:
+                embed = discord.Embed(title="❌ Error", colour=discord.Colour(0xff0000),
+                                      description="Please provide a valid value for modules (enabled/disabled, "
+                                                  "true/false, 1/0, on/off)")
+                await interaction.response.send_message(embed=embed, ephemeral=True)
 
         # Modules
         if setting == "anime":
@@ -72,11 +80,6 @@ class SettingsCommands(app_commands.Group):
             settings.currency = value
         elif setting == "prefix":
             settings.prefix = value
-        else:
-            embed = discord.Embed(title="❌ Error", colour=discord.Colour(0xff0000),
-                                  description=f"Setting `{setting}` not found!")
-            await interaction.response.send_message(embed=embed)
-            return
 
         settings.save()
         embed = discord.Embed(title="✅ Success", colour=discord.Colour(0x00ff00), description=
@@ -84,22 +87,45 @@ class SettingsCommands(app_commands.Group):
         await interaction.response.send_message(embed=embed)
 
     @app_commands.command(name="show", description="Show the current settings")
-    async def show(self, interaction: discord.Interaction):
+    async def show(self, interaction: discord.Interaction) -> None:
         try:
             settings = Settings.get(Settings.guild_id == interaction.guild.id)
         except peewee.DoesNotExist:
             settings = Settings.create(guild_id=interaction.guild.id)
         embed = discord.Embed(title="⚙️ Settings", colour=discord.Colour(0x00ff00),
-                              description="You can change these settings with `/settings set`")
+                              description="Admins can change settings with `/settings set`")
         embed.add_field(name="Currency Icon", value=settings.currency)
         embed.add_field(name="Prefix", value=settings.prefix)
-        embed.add_field(name="Module Anime", value=settings.module_anime)
-        embed.add_field(name="Module Economy", value=settings.module_economy)
-        embed.add_field(name="Module Fun", value=settings.module_fun)
-        embed.add_field(name="Module Games", value=settings.module_games)
-        embed.add_field(name="Module Image", value=settings.module_image)
-        embed.add_field(name="Module Music", value=settings.module_music)
-        embed.add_field(name="Module NSFW", value=settings.module_nsfw)
+        embed.add_field(name="🔰 Anime", value=settings.module_anime)
+        embed.add_field(name="🪙 Economy", value=settings.module_economy)
+        embed.add_field(name="😂 Fun", value=settings.module_fun)
+        embed.add_field(name="🎮 Games", value=settings.module_games)
+        embed.add_field(name="🖼️ Image", value=settings.module_image)
+        embed.add_field(name="🎧 Music", value=settings.module_music)
+        embed.add_field(name="🍑 NSFW", value=settings.module_nsfw)
+        await interaction.response.send_message(embed=embed)
+        
+    @app_commands.command(name="reset", description="Reset settings to default values")
+    async def reset(self, interaction: discord.Interaction) -> None:
+        try:
+            settings = Settings.get(Settings.guild_id == interaction.guild_id)
+        except peewee.DoesNotExist:
+            settings = Settings.create(guild_id=interaction.guild_id)
+
+        # Reset settings to default values
+        settings.currency = ":taco:"
+        settings.prefix = "!"
+        settings.module_anime = False
+        settings.module_economy = False
+        settings.module_fun = True
+        settings.module_games = False
+        settings.module_image = False
+        settings.module_music = False
+        settings.module_nsfw = False
+        
+        settings.save()
+        embed = discord.Embed(title="✅ Success", colour=discord.Colour(0x00ff00),
+                              description="Settings have been reset to default values.")
         await interaction.response.send_message(embed=embed)
 
 
