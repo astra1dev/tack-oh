@@ -38,40 +38,69 @@ class FunCommands(app_commands.Group):
     @app_commands.describe(user="The desired user")
     async def fun_hack(self, interaction: discord.Interaction, user: discord.Member):
         passwords = ["12345", "iloveyou", "qwerty", "hello", "password", "nothing", "john", "cat"]
+        gifs = ["https://c.tenor.com/bhbciND-xRAAAAAC/tenor.gif",
+                "https://c.tenor.com/IVOOvhdE4UMAAAAC/tenor.gif",
+                "https://c.tenor.com/PhnZUt2djmkAAAAC/tenor.gif",
+                "https://c.tenor.com/7ErCv53FBzIAAAAC/tenor.gif",
+                "https://c.tenor.com/VrzXhtoSwcsAAAAC/tenor.gif",
+                "https://c.tenor.com/19Ev9JAezGEAAAAC/tenor.gif",
+                "https://c.tenor.com/5Xw3hRmmtsoAAAAC/tenor.gif"]
         token = requests.get("https://some-random-api.com/others/bottoken").json()['token']
+
         embed = discord.Embed(title=f":space_invader: [1/8] Hacking {user.name}",
                               description="Finding discord login...", colour=discord.Colour(0x00ff00))
+        embed.set_image(url=random.choice(gifs))
         await interaction.response.send_message(embed=embed)
         message = await interaction.original_response()
         await asyncio.sleep(4)
-        await message.edit(embed=discord.Embed(title=f":space_invader: [2/8] Hacking {user.name}",
-                           colour=discord.Colour(0x00ff00),
-                           description=f"Login credentials found!\n\nEmail: `{user.name}@gmail.com`"
-                           f"\nPassword: `{random.choice(passwords)}`\nToken: `{token}`"))
+
+        embed = discord.Embed(title=f":space_invader: [2/8] Hacking {user.name}", colour=discord.Colour(0x00ff00),
+                              description=f"Login credentials found!\n\nEmail: `{user.name}@gmail.com`"
+                              f"\nPassword: `{random.choice(passwords)}`\nToken: `{token}`")
+        embed.set_image(url=random.choice(gifs))
+        await message.edit(embed=embed)
         await asyncio.sleep(4)
-        await message.edit(embed=discord.Embed(title=f":space_invader: [3/8] Hacking {user.name}",
-                           colour=discord.Colour(0x00ff00),
-                           description=f"Injecting `RedLineStealer_v13.37.exe`..."))
+
+        embed = discord.Embed(title=f":space_invader: [3/8] Hacking {user.name}",
+                              colour=discord.Colour(0x00ff00),
+                              description=f"Injecting `RedLineStealer_v13.37.exe`...")
+        embed.set_image(url=random.choice(gifs))
+        await message.edit(embed=embed)
         await asyncio.sleep(4)
-        await message.edit(embed=discord.Embed(title=f":space_invader: [4/8] Hacking {user.name}",
-                           colour=discord.Colour(0x00ff00),
-                           description=f"Accounts found:\n- Fortnite\n- Roblox\n- Minecraft\n\nAttempting to steal..."))
+
+        embed = discord.Embed(title=f":space_invader: [4/8] Hacking {user.name}",
+                              colour=discord.Colour(0x00ff00),
+                              description=f"Accounts found:\n- Fortnite\n- Roblox\n- Minecraft\n\nAttempting to steal...")
+        embed.set_image(url=random.choice(gifs))
+        await message.edit(embed=embed)
         await asyncio.sleep(4)
-        await message.edit(embed=discord.Embed(title=f":space_invader: [5/8] Hacking {user.name}",
-                           colour=discord.Colour(0x00ff00),
-                           description=f"Stolen:\n- 1870 V-Bucks\n- 69 Robux"))
+
+        embed = discord.Embed(title=f":space_invader: [5/8] Hacking {user.name}",
+                              colour=discord.Colour(0x00ff00),
+                              description=f"Stolen:\n- 1870 V-Bucks\n- 69 Robux")
+        embed.set_image(url=random.choice(gifs))
+        await message.edit(embed=embed)
         await asyncio.sleep(4)
-        await message.edit(embed=discord.Embed(title=f":space_invader: [6/8] Hacking {user.name}",
-                           colour=discord.Colour(0x00ff00),
-                           description=f"IP address: `187.0.0.69`"))
+
+        embed = discord.Embed(title=f":space_invader: [6/8] Hacking {user.name}",
+                              colour=discord.Colour(0x00ff00),
+                              description=f"IP address: `187.0.0.69`")
+        embed.set_image(url=random.choice(gifs))
+        await message.edit(embed=embed)
         await asyncio.sleep(4)
-        await message.edit(embed=discord.Embed(title=f":space_invader: [7/8] Hacking {user.name}",
-                           colour=discord.Colour(0x00ff00),
-                           description=f"Selling data to the government..."))
+
+        embed = discord.Embed(title=f":space_invader: [7/8] Hacking {user.name}",
+                              colour=discord.Colour(0x00ff00),
+                              description=f"Selling data to the government...")
+        embed.set_image(url=random.choice(gifs))
+        await message.edit(embed=embed)
         await asyncio.sleep(4)
-        await message.edit(embed=discord.Embed(title=f":space_invader: Finished hacking {user.name}",
-                           colour=discord.Colour(0x00ff00),
-                           description=f"Cleaned traces and self-destructed!"))
+
+        embed = discord.Embed(title=f":space_invader: Finished hacking {user.name}",
+                              colour=discord.Colour(0x00ff00),
+                              description=f"Cleaned traces and self-destructed!")
+        embed.set_image(url=random.choice(gifs))
+        await message.edit(embed=embed)
 
     @app_commands.command(name="8ball", description="Ask the 8ball a question")
     @app_commands.describe(question="The question you want to ask")
