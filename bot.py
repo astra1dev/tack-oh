@@ -44,17 +44,20 @@ player_dict = {True: [player_1, 'R', discord.Colour.red()],
 # for uptime calculation
 start_time = time.time()
 
+
 # -------------------- FUNCTIONS -------------------- #
 @bot.event
 async def on_ready():
+    """
+    Called when the client is done preparing the data received from Discord.
+    Usually after login is successful and the Client.guilds and co. are filled up.
+    """
     i = 0
-    print(f"\n{45*'-'}\n"
-          f"[✅] {bot.user.name}#{bot.user.discriminator} (ID: {bot.user.id}, Display Name: {bot.user.display_name})  "
-          f"\n    is connected to the following servers:")
+    print(f"[✅] {bot.user.name}#{bot.user.discriminator} (ID: {bot.user.id}, Display Name: {bot.user.display_name}) "
+          f"is connected to the following servers:")
     for _ in bot.guilds:
         print(f"{str(i + 1)}: {str(bot.guilds[i].name)}, ID: {str(bot.guilds[i].id)}")
-        i = i + 1
-    print(f"{45*'-'}\n")
+        i += 1
 
     # Load commands from other files
     try:
@@ -72,7 +75,7 @@ async def on_ready():
     # Load slash commands
     await bot.tree.sync()
     afk.start()
-    print("[✅] Slash commands loaded.")
+    print("\n[✅] Slash commands loaded.")
 
 
 class ChallengeView(discord.ui.View):
@@ -108,8 +111,8 @@ class ChallengeView(discord.ui.View):
             return
 
         embed = discord.Embed(title=":video_game: Game: connect4", colour=discord.Colour(0x00ff00),
-                              description=f"{self.board_slots}{self.board.print_board()}\nCurrent Player: {self.player1.mention}\n"
-                                          f":flag_white:: Forfeit")
+                              description=f"{self.board_slots}{self.board.print_board()}\nCurrent Player: "
+                                          f"{self.player1.mention}\n:flag_white:: Forfeit")
         embed.add_field(name=f":red_circle: {self.player1.name}", value="", inline=True)
         embed.add_field(name=f":yellow_circle: {self.player2.name}", value="", inline=True)
         await self.message.edit(embed=embed, view=None)
@@ -128,7 +131,8 @@ class ChallengeView(discord.ui.View):
         await interaction.response.defer()
 
 
-def create_connect4_embed(title: str, description: str, curr_player: discord.Member, other_player: discord.Member) -> discord.Embed:
+def create_connect4_embed(title: str, description: str, curr_player: discord.Member,
+                          other_player: discord.Member) -> discord.Embed:
     embed = discord.Embed(title=title, description=description, colour=discord.Colour(0x00ff00))
     embed.add_field(name=f":red_circle: {curr_player.name}", value="", inline=True)
     embed.add_field(name=f":yellow_circle: {other_player.name}", value="", inline=True)
@@ -195,8 +199,8 @@ async def on_reaction_add(reaction, user) -> None:
         return None
     else:
         embed = discord.Embed(title=":video_game: Game: connect4",
-                              description=f"{board_slots}{curr_board.print_board()}\nCurrent Player: {other_player.mention}"
-                                          f"\n:flag_white:: Forfeit",
+                              description=f"{board_slots}{curr_board.print_board()}\nCurrent Player: "
+                                          f"{other_player.mention}\n:flag_white:: Forfeit",
                               colour=discord.Colour(0x00ff00))
         embed.add_field(name=f":red_circle: {curr_player.name}", value="", inline=True)
         embed.add_field(name=f":yellow_circle: {other_player.name}", value="", inline=True)

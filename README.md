@@ -8,16 +8,16 @@
     <img src="https://img.shields.io/badge/license-GPL-brightgreen.svg?style=plastic&logo=GNU&label=License">
   </a>
   
-  <a href="https://github.com/astra1dev/PowerConverter/actions/workflows/python-app.yml">
+  <a href="../../actions/workflows/python-app.yml">
     <img src="https://github.com/astra1dev/tack-oh/actions/workflows/python-app.yml/badge.svg?event=push">
-  </a>
-
-  <a href="../../releases/latest">
-    <img src="https://img.shields.io/github/release/astra1dev/tack-oh.svg?label=version&style=plastic">
   </a>
 
   <a href="../../releases">
     <img src="https://img.shields.io/github/downloads/astra1dev/tack-oh/total.svg?style=plastic">
+  </a>
+
+  <a href="../../releases/latest">
+    <img src="https://img.shields.io/github/downloads/astra1dev/tack-oh/latest/total?style=plastic">
   </a>
   
 </p>
@@ -40,6 +40,7 @@
 > This is a self-hosted bot – meaning you will need to host and maintain your own instance.
 
 # 🛠️ Installation
+- Set up your bot on the [Discord developer portal](https://discord.com/developers/applications) if you haven't already.
 - Download the necessary files with `git clone https://github.com/astra1dev/tack-oh.git`
 - Install the required packages with `python -m pip install -r requirements.txt`
 - Edit the file `/settings/.env` to include your bot's token
