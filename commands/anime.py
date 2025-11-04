@@ -2,7 +2,7 @@ import animec
 import discord
 from discord import app_commands
 import requests
-
+from settings.settings import SRA_BASE_URL
 
 class AnimeCommands(app_commands.Group):
     @app_commands.command(name="search", description="Search for an anime")
@@ -44,7 +44,7 @@ class AnimeCommands(app_commands.Group):
                                  app_commands.Choice(name="pat", value="pat"),
                                  app_commands.Choice(name="hug", value="hug")])
     async def gif(self, interaction: discord.Interaction, topic: discord.app_commands.Choice[str]):
-        url = requests.get("https://some-random-api.com/animu/" + topic.value).json()['link']
+        url = requests.get(f"{SRA_BASE_URL}/animu/{topic.value}").json()['link']
         embed = discord.Embed(title=f":goblin: Anime GIF: {topic.name}", url=url, colour=discord.Colour(0x00ff00))
         embed.set_image(url=url)
         await interaction.response.send_message(embed=embed)

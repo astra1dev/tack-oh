@@ -4,6 +4,7 @@ from io import BytesIO
 import requests
 import urllib
 from urllib import parse
+from settings.settings import SRA_BASE_URL
 
 
 class ImageCommands(app_commands.Group):
@@ -27,7 +28,7 @@ class ImageCommands(app_commands.Group):
         # NEED TO FIX LATER, TRIGGERED SHOULD BE IN EMBED FOR CONSISTENCY
         if effect.name == "triggered":
             try:
-                response = requests.get("https://some-random-api.com/canvas/triggered?avatar=" + str(pfp_url)).content
+                response = requests.get(f"{SRA_BASE_URL}/canvas/triggered?avatar={str(pfp_url)}").content
                 image_data = BytesIO(response)
                 # embed = discord.Embed(title="✨ ImageEffect: " + effect.name, colour=discord.Colour(0x00ff00),
                 # description=member.mention)
@@ -39,7 +40,7 @@ class ImageCommands(app_commands.Group):
                 await interaction.response.send_message("Error making triggered image!", ephemeral=True)
         else:
             try:
-                url = "https://some-random-api.com/canvas/" + effect.value + "?avatar=" + str(pfp_url)
+                url = f"{SRA_BASE_URL}/canvas/{effect.value}?avatar={str(pfp_url)}"
                 embed = discord.Embed(title="✨ ImageEffect: " + effect.name, colour=discord.Colour(0x00ff00),
                                       description=member.mention)
                 embed.set_image(url=url)
@@ -67,7 +68,7 @@ class ImageCommands(app_commands.Group):
                      filter: discord.app_commands.Choice[str]):
         pfp_url = member.display_avatar
         try:
-            url = "https://some-random-api.com/canvas/" + filter.value + "?avatar=" + str(pfp_url)
+            url = f"{SRA_BASE_URL}/canvas/filter/{filter.value}?avatar={str(pfp_url)}"
             embed = discord.Embed(title="✨ ImageFilter: " + filter.name, colour=discord.Colour(0x00ff00),
                                   description=member.mention)
             embed.set_image(url=url)
@@ -86,7 +87,7 @@ class ImageCommands(app_commands.Group):
         text = urllib.parse.quote(text)
         name = urllib.parse.quote(member.name)
         displayname = urllib.parse.quote(member.display_name)
-        url = f"https://some-random-api.com/canvas/misc/{effect.value}?avatar={member.display_avatar}&comment={text}"
+        url = f"{SRA_BASE_URL}/canvas/misc/{effect.value}?avatar={member.display_avatar}&comment={text}"
         f"&username={name}&displayname={displayname}"
         embed = discord.Embed(title="✨ ImageCompose: " + effect.name, colour=discord.Colour(0x00ff00),
                               description=member.mention)

@@ -43,5 +43,7 @@
 - Set up your bot on the [Discord developer portal](https://discord.com/developers/applications) if you haven't already.
 - Download the necessary files with `git clone https://github.com/astra1dev/tack-oh.git`
 - Install the required packages with `python -m pip install -r requirements.txt`
-- Edit the file `/settings/.env` to include your bot's token
+- Edit the file `/settings/.env` and add the following:
+  - Your bot's token, which can be found on the Discord developer portal
+  - (Optional, required by some commands) Your SomeRandomAPI API key can be obtained [here](https://docs.some-random-api.com/authorization).
 - Run the bot with `python3 bot.py`

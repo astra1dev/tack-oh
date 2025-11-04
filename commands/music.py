@@ -5,6 +5,8 @@ from urllib import parse
 import requests
 import textwrap
 
+from settings.settings import SRA_BASE_URL, SRA_REQUEST_HEADERS
+
 class MusicCommands(app_commands.Group):
     @app_commands.command(name="play", description="Play a song")
     async def play(self, interaction: discord.Interaction):
@@ -17,7 +19,7 @@ class MusicCommands(app_commands.Group):
     async def lyrics(self, interaction: discord.Interaction, search: str):
         # Defer at the start to avoid timeout because of slow API response
         await interaction.response.defer(ephemeral=True, thinking=True)
-        r = requests.get("https://api.some-random-api.com/lyrics?title=" + urllib.parse.quote(search))
+        r = requests.get(f"{SRA_BASE_URL}/lyrics?title={urllib.parse.quote(search)}", headers=SRA_REQUEST_HEADERS)
         try:
             song_lyrics = r.json()['lyrics']
             song_artist = r.json()['artist']

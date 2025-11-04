@@ -3,6 +3,7 @@ from discord import app_commands
 import requests
 import asyncio
 import random
+from settings.settings import SRA_BASE_URL
 
 
 class FunCommands(app_commands.Group):
@@ -18,7 +19,7 @@ class FunCommands(app_commands.Group):
                                   app_commands.Choice(name="raccoon", value="raccoon"),
                                   app_commands.Choice(name="red panda", value="red_panda"), ])
     async def fun_animal(self, interaction: discord.Interaction, animal: discord.app_commands.Choice[str]):
-        url = "https://some-random-api.com/animal/" + animal.value
+        url = f"{SRA_BASE_URL}/animal/{animal.value}"
         r = requests.get(url)
         fact = r.json()["fact"]
         img = r.json()["image"]
@@ -46,6 +47,7 @@ class FunCommands(app_commands.Group):
                 "https://c.tenor.com/19Ev9JAezGEAAAAC/tenor.gif",
                 "https://c.tenor.com/5Xw3hRmmtsoAAAAC/tenor.gif"]
         token = requests.get("https://some-random-api.com/others/bottoken").json()['token']
+        token = requests.get(f"{SRA_BASE_URL}/bottoken").json()['token']
 
         embed = discord.Embed(title=f":space_invader: [1/8] Hacking {user.name}",
                               description="Finding discord login...", colour=discord.Colour(0x00ff00))
@@ -133,7 +135,7 @@ class FunCommands(app_commands.Group):
 
     @app_commands.command(name="joke", description="Tell a joke")
     async def joke(self, interaction: discord.Interaction):
-        joke_text = requests.get("https://some-random-api.com/joke").json()['joke']
+        joke_text = requests.get(f"{SRA_BASE_URL}/joke").json()['joke']
         embed = discord.Embed(title=":joy: Random Joke", description=joke_text, colour=discord.Colour(0x00ff00))
         await interaction.response.send_message(embed=embed)
 

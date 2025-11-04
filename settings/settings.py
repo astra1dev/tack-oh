@@ -7,7 +7,11 @@ from discord import app_commands
 load_dotenv()
 
 DISCORD_API_SECRET = os.getenv("DISCORD_API_TOKEN")
-GIPHY_API_KEY = os.getenv("GIPHY_API_KEY")
+SRA_API_KEY = os.getenv("SRA_API_KEY")
+SRA_REQUEST_HEADERS = {
+    "Authorization": f"{SRA_API_KEY}"
+}
+SRA_BASE_URL = "https://api.some-random-api.com"
 
 db = peewee.SqliteDatabase("settings/settings.db")
 
