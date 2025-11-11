@@ -9,15 +9,17 @@ from settings.settings import SRA_BASE_URL
 class FunCommands(app_commands.Group):
     @app_commands.command(name="animal", description="Get a random image & fact about an animal")
     @app_commands.describe(animal="The desired animal")
-    @app_commands.choices(animal=[app_commands.Choice(name="bird", value="bird"),
+    @app_commands.choices(animal=[app_commands.Choice(name="birb", value="birb"),
+                                  app_commands.Choice(name="bird", value="bird"),
                                   app_commands.Choice(name="cat", value="cat"),
                                   app_commands.Choice(name="dog", value="dog"),
                                   app_commands.Choice(name="fox", value="fox"),
                                   app_commands.Choice(name="kangaroo", value="kangaroo"),
                                   app_commands.Choice(name="koala", value="koala"),
                                   app_commands.Choice(name="panda", value="panda"),
-                                  app_commands.Choice(name="raccoon", value="raccoon"),
-                                  app_commands.Choice(name="red panda", value="red_panda"), ])
+                                  app_commands.Choice(name="raccoon", value="racoon"),
+                                  app_commands.Choice(name="red panda", value="red_panda"),
+                                  app_commands.Choice(name="whale", value="whale")])
     async def fun_animal(self, interaction: discord.Interaction, animal: discord.app_commands.Choice[str]):
         url = f"{SRA_BASE_URL}/animal/{animal.value}"
         r = requests.get(url)
@@ -46,7 +48,6 @@ class FunCommands(app_commands.Group):
                 "https://c.tenor.com/VrzXhtoSwcsAAAAC/tenor.gif",
                 "https://c.tenor.com/19Ev9JAezGEAAAAC/tenor.gif",
                 "https://c.tenor.com/5Xw3hRmmtsoAAAAC/tenor.gif"]
-        token = requests.get("https://some-random-api.com/others/bottoken").json()['token']
         token = requests.get(f"{SRA_BASE_URL}/bottoken").json()['token']
 
         embed = discord.Embed(title=f":space_invader: [1/8] Hacking {user.name}",

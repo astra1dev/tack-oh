@@ -1,7 +1,5 @@
 import discord
 from discord import app_commands
-from io import BytesIO
-import requests
 import urllib
 from urllib import parse
 from settings.settings import SRA_BASE_URL
@@ -10,12 +8,15 @@ from settings.settings import SRA_BASE_URL
 class ImageCommands(app_commands.Group):
     @app_commands.command(name="effect", description="Apply an effect to the pfp of a user")
     @app_commands.describe(effect="The desired effect", member="The desired user")
-    @app_commands.choices(effect=[app_commands.Choice(name="comrade", value="comrade"),
+    @app_commands.choices(effect=[app_commands.Choice(name="circle", value="circle"),
+                                  app_commands.Choice(name="comrade", value="comrade"),
                                   app_commands.Choice(name="gay", value="gay"),
                                   app_commands.Choice(name="glass", value="glass"),
+                                  app_commands.Choice(name="heart", value="heart"),
                                   app_commands.Choice(name="horny license", value="horny"),
                                   app_commands.Choice(name="jail", value="jail"),
                                   app_commands.Choice(name="lgbt", value="lgbt"),
+                                  app_commands.Choice(name="lied", value="lied"),
                                   app_commands.Choice(name="lolice", value="lolice"),
                                   app_commands.Choice(name="mission passed", value="passed"),
                                   app_commands.Choice(name="simp card", value="simpcard"),
@@ -24,31 +25,36 @@ class ImageCommands(app_commands.Group):
     async def effect(self, interaction: discord.Interaction, member: discord.Member,
                      effect: discord.app_commands.Choice[str]):
         pfp_url = member.display_avatar
-        # Only triggered is a gif, all others are static images => same code
-        # NEED TO FIX LATER, TRIGGERED SHOULD BE IN EMBED FOR CONSISTENCY
-        if effect.name == "triggered":
-            try:
-                response = requests.get(f"{SRA_BASE_URL}/canvas/triggered?avatar={str(pfp_url)}").content
-                image_data = BytesIO(response)
-                # embed = discord.Embed(title="✨ ImageEffect: " + effect.name, colour=discord.Colour(0x00ff00),
-                # description=member.mention)
-                # embed.set_image(url="attachment://triggered.gif")
-                # await interaction.response.send_message(embed=embed)
-                await interaction.response.send_message(file=discord.File(image_data, 'triggered.gif'))
-            except KeyError:
-                # {"error":{"error":"Image given has not completed loading"}}
-                await interaction.response.send_message("Error making triggered image!", ephemeral=True)
-        else:
-            try:
-                url = f"{SRA_BASE_URL}/canvas/{effect.value}?avatar={str(pfp_url)}"
+
+        try:
+            # /canvas/overlay endpoints
+            if effect.value in ["comrade", "gay", "glass", "jail", "passed", "triggered", "wasted"]:
+                url = f"{SRA_BASE_URL}/canvas/overlay/{effect.value}?avatar={str(pfp_url)}"
                 embed = discord.Embed(title="✨ ImageEffect: " + effect.name, colour=discord.Colour(0x00ff00),
                                       description=member.mention)
                 embed.set_image(url=url)
                 await interaction.response.send_message(embed=embed)
-            except KeyError:
-                embed = discord.Embed(title=":x: Error", colour=discord.Colour(0xff0000),
-                                      description="Image could not be created!")
-                await interaction.response.send_message(embed=embed, ephemeral=True)
+
+            # /canvas/misc endpoints
+            elif effect.value in ["circle", "heart", "horny", "lgbt", "lolice", "simpcard"]:
+                url = f"{SRA_BASE_URL}/canvas/misc/{effect.value}?avatar={str(pfp_url)}"
+                embed = discord.Embed(title="✨ ImageEffect: " + effect.name, colour=discord.Colour(0x00ff00),
+                                      description=member.mention)
+                embed.set_image(url=url)
+                await interaction.response.send_message(embed=embed)
+
+            elif effect.value == "lied":
+                url = f"{SRA_BASE_URL}/canvas/misc/{effect.value}?username={member.display_name}&avatar={str(pfp_url)}"
+                embed = discord.Embed(title="✨ ImageEffect: " + effect.name, colour=discord.Colour(0x00ff00),
+                                      description=member.mention)
+                embed.set_image(url=url)
+                await interaction.response.send_message(embed=embed)
+
+        except KeyError:
+            embed = discord.Embed(title=":x: Error", colour=discord.Colour(0xff0000),
+                                  description="Image could not be created!")
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+
 
     @app_commands.command(name="filter", description="Apply a simple filter to the pfp of a user")
     @app_commands.describe(filter="The desired filter", member="The desired user")
@@ -81,18 +87,36 @@ class ImageCommands(app_commands.Group):
     @app_commands.command(name="compose", description="Create meme-y images")
     @app_commands.describe(effect="The desired effect", member="The desired user", text="The text to put on the image")
     @app_commands.choices(effect=[app_commands.Choice(name="youtube comment", value="youtube-comment"),
-                                  app_commands.Choice(name="twitter post", value="tweet"),])
+                                  app_commands.Choice(name="twitter post", value="tweet"),
+                                  app_commands.Choice(name="oh no it's stupid", value="its-so-stupid")])
     async def compose(self, interaction: discord.Interaction, member: discord.Member,
                       effect: discord.app_commands.Choice[str], text: str):
         text = urllib.parse.quote(text)
         name = urllib.parse.quote(member.name)
-        displayname = urllib.parse.quote(member.display_name)
-        url = f"{SRA_BASE_URL}/canvas/misc/{effect.value}?avatar={member.display_avatar}&comment={text}"
-        f"&username={name}&displayname={displayname}"
-        embed = discord.Embed(title="✨ ImageCompose: " + effect.name, colour=discord.Colour(0x00ff00),
-                              description=member.mention)
-        embed.set_image(url=url)
-        await interaction.response.send_message(embed=embed)
+        display_name = urllib.parse.quote(member.display_name)
+
+        if effect.value == "youtube-comment":
+            url = (f"{SRA_BASE_URL}/canvas/misc/{effect.value}?username={name}&comment={text}"
+                   f"&avatar={member.display_avatar}")
+            embed = discord.Embed(title="✨ ImageCompose: " + effect.name, colour=discord.Colour(0x00ff00),
+                                  description=member.mention)
+            embed.set_image(url=url)
+            await interaction.response.send_message(embed=embed)
+
+        elif effect.value == "tweet":
+            url = (f"{SRA_BASE_URL}/canvas/misc/{effect.value}?username={name}&displayname={display_name}"
+                   f"&comment={text}&avatar={member.display_avatar}")
+            embed = discord.Embed(title="✨ ImageCompose: " + effect.name, colour=discord.Colour(0x00ff00),
+                                  description=member.mention)
+            embed.set_image(url=url)
+            await interaction.response.send_message(embed=embed)
+
+        elif effect.value == "its-so-stupid":
+            url = f"{SRA_BASE_URL}/canvas/misc/{effect.value}?dog={text}&avatar={member.display_avatar}"
+            embed = discord.Embed(title="✨ ImageCompose: " + effect.name, colour=discord.Colour(0x00ff00),
+                                  description=member.mention)
+            embed.set_image(url=url)
+            await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):

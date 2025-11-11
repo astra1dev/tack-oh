@@ -36,13 +36,18 @@ class AnimeCommands(app_commands.Group):
                             value=f"{news.description[i][:200]}...\n[Read more]({news.links[i]})", inline=False)
         await interaction.response.send_message(embed=embed)
 
-    # currently not working (some random api has some issues)
     @app_commands.command(name="gif", description="Get an anime gif")
     @app_commands.describe(topic="The topic you want to search")
-    @app_commands.choices(topic=[app_commands.Choice(name="face palm", value="face-palm"),
-                                 app_commands.Choice(name="wink", value="wink"),
+    @app_commands.choices(topic=[app_commands.Choice(name="nom", value="nom"),
+                                 app_commands.Choice(name="poke", value="poke"),
+                                 app_commands.Choice(name="cry", value="cry"),
+                                 app_commands.Choice(name="kiss", value="kiss"),
                                  app_commands.Choice(name="pat", value="pat"),
-                                 app_commands.Choice(name="hug", value="hug")])
+                                 app_commands.Choice(name="hug", value="hug"),
+                                 app_commands.Choice(name="wink", value="wink"),
+                                 app_commands.Choice(name="face palm", value="face-palm"),
+                                 # app_commands.Choice(name="quote", value="quote")
+                                ])
     async def gif(self, interaction: discord.Interaction, topic: discord.app_commands.Choice[str]):
         url = requests.get(f"{SRA_BASE_URL}/animu/{topic.value}").json()['link']
         embed = discord.Embed(title=f":goblin: Anime GIF: {topic.name}", url=url, colour=discord.Colour(0x00ff00))
