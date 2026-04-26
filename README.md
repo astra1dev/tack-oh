@@ -45,5 +45,12 @@
 - Install the required packages with `python -m pip install -r requirements.txt`
 - Edit the file `/settings/.env` and add the following:
   - Your bot's token, which can be found on the Discord developer portal
-  - (Optional, required by some commands) Your SomeRandomAPI API key can be obtained [here](https://docs.some-random-api.com/authorization).
+  - Your SomeRandomAPI API key, which can be obtained [here](https://docs.some-random-api.com/authorization). It is required for `/lyrics` to work, and lowers rate limits for some other commands.
 - Run the bot with `python3 bot.py`
+
+You can now add the bot in two ways:
+
+- Invite the bot **to your server** (or any server where you have "Manage Server" permission) using the OAuth2 URL generator on the Discord developer portal.
+- Add the bot directly **to your account**. This allows you to use the bot in *any* server.
+  If you have "Use External Apps" permission in a server, the bot's messages will be visible to everyone, otherwise, they will only be visible to you.
+  You won't be able to use the economy system in servers that don't have the bot added.

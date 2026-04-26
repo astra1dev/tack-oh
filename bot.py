@@ -233,6 +233,9 @@ async def on_reaction_add(reaction, user) -> None:
 
 
 @bot.tree.command(name="info", description="Shows the bot's status and latency")
+@app_commands.allowed_installs(guilds=True, users=True)
+@app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
+@app_commands.user_install()
 async def info(interaction):
     # Calculate uptime
     uptime_seconds = time.time() - start_time

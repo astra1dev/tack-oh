@@ -142,4 +142,7 @@ class FunCommands(app_commands.Group):
 
 
 async def setup(bot):
-    bot.tree.add_command(FunCommands(name="fun", description="Fun commands"))
+    bot.tree.add_command(FunCommands(name="fun", description="Fun commands",
+                                     allowed_installs=app_commands.AppInstallationType(guild=True, user=True),
+                                     allowed_contexts=app_commands.AppCommandContext(guild=True, dm_channel=True,
+                                                                                     private_channel=True)))

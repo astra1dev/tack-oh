@@ -40,4 +40,7 @@ class MusicCommands(app_commands.Group):
 
 
 async def setup(bot):
-    bot.tree.add_command(MusicCommands(name="music", description="Music commands"))
+    bot.tree.add_command(MusicCommands(name="music", description="Music commands",
+                                       allowed_installs=app_commands.AppInstallationType(guild=True, user=True),
+                                       allowed_contexts=app_commands.AppCommandContext(guild=True, dm_channel=True,
+                                                                                       private_channel=True)))
