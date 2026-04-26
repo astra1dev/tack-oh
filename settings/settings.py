@@ -108,7 +108,7 @@ class SettingsCommands(app_commands.Group):
         embed.add_field(name="🎧 Music", value=settings.module_music)
         embed.add_field(name="🍑 NSFW", value=settings.module_nsfw)
         await interaction.response.send_message(embed=embed)
-        
+
     @app_commands.command(name="reset", description="Reset settings to default values")
     async def reset(self, interaction: discord.Interaction) -> None:
         try:
@@ -126,7 +126,7 @@ class SettingsCommands(app_commands.Group):
         settings.module_image = False
         settings.module_music = False
         settings.module_nsfw = False
-        
+
         settings.save()
         embed = discord.Embed(title="✅ Success", colour=discord.Colour(0x00ff00),
                               description="Settings have been reset to default values.")

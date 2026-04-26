@@ -278,7 +278,7 @@ async def info(interaction):
 # Server Settings > Integrations > tack-oh > /say > Add roles or Members
 @bot.tree.command(name="say", description="Says something")
 @app_commands.describe(channel="The channel you want to send the message to", message="The message you want to send")
-async def say(interaction, channel: discord.TextChannel, message: str):
+async def say(interaction, channel: discord.TextChannel, message: str) -> None:
     channel = bot.get_channel(channel.id)
     await channel.send(str(message))
     await interaction.response.send_message(f"Message sent! {channel.mention}", ephemeral=True)

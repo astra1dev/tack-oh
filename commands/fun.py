@@ -25,7 +25,7 @@ class FunCommands(app_commands.Group):
         r = requests.get(url)
         fact = r.json()["fact"]
         img = r.json()["image"]
-        embed = discord.Embed(title=f":nerd: Fact: {animal.value}", description=fact, colour=discord.Colour(0x00ff00))
+        embed = discord.Embed(title=f":nerd: Fact: {animal.name}", description=fact, colour=discord.Colour(0x00ff00))
         embed.set_image(url=img)
         await interaction.response.send_message(embed=embed)
 
